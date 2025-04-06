@@ -1,6 +1,11 @@
 import serial
 import time
 
+import sys 
+  
+# Insert the path of modules folder  
+sys.path.insert(0, "/home/daniel/Pneaumatic control Tessis/UKTC-Graduation-Project/Relay_control")
+import relay_control
 # Настройка на UART порта
 ser = serial.Serial(
     port='/dev/ttyAMA0',  # Или /dev/ttyAMA10, ако използваш него
@@ -36,6 +41,10 @@ while True:
     fingerprint_id = verify_fingerprint()
     if fingerprint_id:
         print("🔓 Отваряне на вратата...")
+        relay_control.control_relay(relay_control.RELAY1_PIN, relay_control.GPIO.LOW)
+        time.sleep(5)
+        relay_control.control_relay(relay_control.RELAY1_PIN, relay_control.GPIO.HIGH)
+        relay_control.control_relay(relay_control.RELAY2_PIN, relay_control.GPIO.LOW)
         break  # Излизаме от цикъла при разпознат отпечатък
 
     time.sleep(2)  # Изчакване преди нова проверка

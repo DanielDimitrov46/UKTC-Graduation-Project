@@ -22,6 +22,7 @@ class FaceRecognition:
     known_face_encodings = []
     known_face_names = []
     process_current_frame = True
+    match = False
 
     def __init__(self):
         self.encode_faces()
@@ -68,7 +69,13 @@ class FaceRecognition:
                         confidence = face_confidence(face_distances[best_match_index])
                     
                     self.face_names.append(f'{name} ({confidence})')
-            
+                    if float(self.face_names[0].split(' ')[1].strip('('')%')) >=70:
+                        print('Match')
+                        exit()
+                    else:
+                        print('No match')
+                    # print(self.face_names[0].split(' ')[1].strip('('')%'))
+                    # print(self.face_names[0].split(' ')[1])
             self.process_current_frame = not self.process_current_frame
 
             for (top, right, bottom, left), name in zip(self.face_locations, self.face_names):
