@@ -34,71 +34,100 @@ class FaceRecognition:
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
         print(self.known_face_names)
-
+        
     def run_recognition(self):
         video_capture = cv2.VideoCapture(0)
-
         if not video_capture.isOpened():
-            sys.exit("Video source not found ...")
+            return False
 
-        while True:
-            ret, frame = video_capture.read()
+        ret, frame = video_capture.read()
+        if not ret:
+            return False
 
-            if self.process_current_frame:
-                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-                rgb_small_frame = np.array(small_frame, dtype=np.uint8)
+        small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+        rgb_small_frame = small_frame[:, :, ::-1]
 
-                self.face_locations = face_recognition.face_locations(rgb_small_frame)
-                print(self.face_locations)
-                if self.face_locations:
-                    self.face_encodings = face_recognition.face_encodings(rgb_small_frame, self.face_locations)
-                else:
-                    self.face_encodings = []
+        face_locations = face_recognition.face_locations(rgb_small_frame)
+        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
-                self.face_names = []
-                for face_encoding in self.face_encodings:
-                    matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
-                    name = "Unknown"
-                    confidence = 'Unklnows'
+        for face_encoding in face_encodings:
+            matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
+            face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
+            best_match_index = np.argmin(face_distances)
 
-                    face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
-                    best_match_index = np.argmin(face_distances)
-
-                    if matches[best_match_index]:
-                        name = self.known_face_names[best_match_index]
-                        confidence = face_confidence(face_distances[best_match_index])
-                    
-                    self.face_names.append(f'{name} ({confidence})')
-                    if float(self.face_names[0].split(' ')[1].strip('('')%')) >=70:
-                        return True
-                        # print('Match')
-                        # exit()
-                    else:
-                        print('No match')
-                    # print(self.face_names[0].split(' ')[1].strip('('')%'))
-                    # print(self.face_names[0].split(' ')[1])
-            self.process_current_frame = not self.process_current_frame
-
-            for (top, right, bottom, left), name in zip(self.face_locations, self.face_names):
-                top *= 4
-                right *= 4
-                bottom *= 4
-                left *= 4
-
-                cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-
-                cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), -1)
-                font = cv2.FONT_HERSHEY_DUPLEX
-                cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.8, (255, 255, 255), 1)
-
-            cv2.imshow('Face Recognition', frame)
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            if matches[best_match_index]:
+                confidence = face_confidence(face_distances[best_match_index])
+                if float(confidence.strip('%')) >= 75:
+                    video_capture.release()
+                    return True
 
         video_capture.release()
-        cv2.destroyAllWindows()
         return False
+
+    # def run_recognition(self):
+    #     video_capture = cv2.VideoCapture(0)
+
+    #     if not video_capture.isOpened():
+    #         sys.exit("Video source not found ...")
+
+    #     while True:
+    #         ret, frame = video_capture.read()
+
+    #         if self.process_current_frame:
+    #             small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+    #             rgb_small_frame = np.array(small_frame, dtype=np.uint8)
+
+    #             self.face_locations = face_recognition.face_locations(rgb_small_frame)
+    #             print(self.face_locations)
+    #             if self.face_locations:
+    #                 self.face_encodings = face_recognition.face_encodings(rgb_small_frame, self.face_locations)
+    #             else:
+    #                 self.face_encodings = []
+
+    #             self.face_names = []
+    #             for face_encoding in self.face_encodings:
+    #                 matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
+    #                 name = "Unknown"
+    #                 confidence = 'Unklnows'
+
+    #                 face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
+    #                 best_match_index = np.argmin(face_distances)
+
+    #                 if matches[best_match_index]:
+    #                     name = self.known_face_names[best_match_index]
+    #                     confidence = face_confidence(face_distances[best_match_index])
+                    
+    #                 self.face_names.append(f'{name} ({confidence})')
+    #                 if float(self.face_names[0].split(' ')[1].strip('('')%')) >=70:
+    #                     return True
+    #                     # print('Match')
+    #                     # exit()
+    #                 else:
+    #                     print('No match')
+    #                 # print(self.face_names[0].split(' ')[1].strip('('')%'))
+    #                 # print(self.face_names[0].split(' ')[1])
+    #         self.process_current_frame = not self.process_current_frame
+
+    #         for (top, right, bottom, left), name in zip(self.face_locations, self.face_names):
+    #             top *= 4
+    #             right *= 4
+    #             bottom *= 4
+    #             left *= 4
+
+    #             cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+
+    #             cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), -1)
+    #             font = cv2.FONT_HERSHEY_DUPLEX
+    #             cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.8, (255, 255, 255), 1)
+
+    #         cv2.imshow('Face Recognition', frame)
+
+    #         if cv2.waitKey(1) & 0xFF == ord('q'):
+    #             break
+
+    #     video_capture.release()
+    #     cv2.destroyAllWindows()
+    #     return False
 
 # if __name__ == '__main__':
 #     fr = FaceRecognition()
