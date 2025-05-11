@@ -1,6 +1,6 @@
 import face_recognition
 import os,sys
-os.environ['QT_QPA_PLATFORM'] = 'xcb'
+# os.environ['QT_QPA_PLATFORM'] = 'xcb'
 import cv2
 import numpy as np
 import math
@@ -27,8 +27,8 @@ class FaceRecognition:
     def __init__(self):
         self.encode_faces()
     def encode_faces(self):
-        for image in os.listdir('faces'):
-            face_image = face_recognition.load_image_file('faces/' + image)
+        for image in os.listdir('/home/daniel/Pneaumatic control Tessis/UKTC-Graduation-Project/sensors/faces'):
+            face_image = face_recognition.load_image_file('/home/daniel/Pneaumatic control Tessis/UKTC-Graduation-Project/sensors/faces/' + image)
             face_encoding = face_recognition.face_encodings(face_image)[0]
 
             self.known_face_encodings.append(face_encoding)
@@ -70,8 +70,9 @@ class FaceRecognition:
                     
                     self.face_names.append(f'{name} ({confidence})')
                     if float(self.face_names[0].split(' ')[1].strip('('')%')) >=70:
-                        print('Match')
-                        exit()
+                        return True
+                        # print('Match')
+                        # exit()
                     else:
                         print('No match')
                     # print(self.face_names[0].split(' ')[1].strip('('')%'))
@@ -97,7 +98,8 @@ class FaceRecognition:
 
         video_capture.release()
         cv2.destroyAllWindows()
+        return False
 
-if __name__ == '__main__':
-    fr = FaceRecognition()
-    fr.run_recognition()
+# if __name__ == '__main__':
+#     fr = FaceRecognition()
+#     fr.run_recognition()

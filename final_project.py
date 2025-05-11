@@ -1,4 +1,0 @@
-import Relay_control.relay_control as relay_control
-import fr_recognition_yt.main as faceRecognition
-import RFID.rfid_read as rfidRead
-import Fingerprint.fingerprint_recognition_response as fingerprintRecognition
