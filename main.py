@@ -1,5 +1,5 @@
 import time
-from sensors.face_recognition import FaceRecognition
+from sensors.face_module import FaceRecognition
 from sensors.rfid_read import RFIDReader
 from sensors.fingerprint_recognition_response import FingerprintReader
 import relay_control
@@ -12,7 +12,7 @@ def trigger_relay():
 
 
 def main():
-    face = FaceRecognition().run_recognition()
+    face = FaceRecognition()
     rfid = RFIDReader()
     fingerprint = FingerprintReader()
 

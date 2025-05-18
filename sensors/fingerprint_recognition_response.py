@@ -44,7 +44,7 @@ class FingerprintReader:
                 return False
         else:
             print("⚠ Няма отговор от сензора.")
-            return None
+            return False
         # self.ser.close()
 #     def close(self):
 # # Безкраен цикъл за следене на пръстови отпечатъци
