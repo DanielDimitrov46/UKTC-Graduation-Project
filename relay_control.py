@@ -6,12 +6,13 @@ import RPi.GPIO as GPIO
 RELAY1_PIN = 23
 RELAY2_PIN = 24
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(RELAY1_PIN, GPIO.OUT)
-GPIO.setup(RELAY2_PIN, GPIO.OUT)
+
 
 # Function to control the relays
 def control_relay(relay, state):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(RELAY1_PIN, GPIO.OUT)
+    GPIO.setup(RELAY2_PIN, GPIO.OUT)
     GPIO.output(relay, state)
 
 # try:

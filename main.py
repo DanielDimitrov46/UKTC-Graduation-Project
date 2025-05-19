@@ -1,4 +1,5 @@
 import time
+import RPi.GPIO as GPIO
 from sensors.face_module import FaceRecognition
 from sensors.rfid_read import RFIDReader
 from sensors.fingerprint_recognition_response import FingerprintReader
@@ -20,13 +21,15 @@ def main():
         if face.run_recognition():
             print("✅ Лице разпознато.")
             trigger_relay()
+            continue
         elif rfid.read_rfid():
             print("✅ RFID съвпадение.")
             trigger_relay()
+            continue
         elif fingerprint.verify_fingerprint():
             print("✅ Пръстов отпечатък съвпадение.")
             trigger_relay()
-
+            continue
         time.sleep(1)
 
 

@@ -7,7 +7,7 @@ class RFIDReader:
 
     def read_rfid(self):
         try:
-            id, text = self.reader.read()
+            text = self.reader.read()
             if text.strip().lower() == "admin":
                 return True
             else:
